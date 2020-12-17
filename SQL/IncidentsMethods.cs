@@ -63,5 +63,90 @@ namespace IM.SQL
 
             return incidents.First();
         }
+
+        public static List<Incident> GetAllIncidents()
+        {
+            var dt = new DataTable();
+            var parameters = new SortedList<string, object>()
+            {                 
+            };
+
+            var dbResponse = DataAccessMethods.ExecuteProcedure("GetAllIncidents", parameters);
+            var ds = dbResponse.Ds;
+
+            if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
+                return null;
+
+            dt = ds.Tables[0];
+
+            var incidents = (from rw in dt.AsEnumerable()
+                             select new Incident()
+                             {
+                                 Id = rw["Id"].ToString(),
+                                 CreatedBy = rw["CreatedBy"].ToString(),
+                                 AssignedTo = rw["AssignedTo"].ToString(),
+                                 CreatedAT = DateTime.Parse(rw["CreatedAT"].ToString()),
+                                 Title = rw["Title"].ToString(),
+                                 Description = rw["Description"].ToString(),
+                                 AdditionalData = rw["AdditionalData"].ToString(),
+                                 Attachment1 = rw["Attachment1"].ToString(),
+                                 Attachment2 = rw["Attachment2"].ToString(),
+                                 Attachment3 = rw["Attachment3"].ToString(),
+                                 StartTime = DateTime.Parse(rw["StartTime"].ToString()),
+
+                             }).ToList();
+
+            return incidents;
+        }
+
+        public static IncidentsWithPage GetIncidentsPage(int pageSize , int pageNumber, string sortBy, string sortDirection)
+        {
+            var dt = new DataTable();
+            var parameters = new SortedList<string, object>()
+            {
+                 { "PageSize" , pageSize},
+                 { "PageNumber" , pageNumber},
+                 { "SortBy" , sortBy},
+                 { "SortDirection" , sortDirection},
+            };
+
+            var dbResponse = DataAccessMethods.ExecuteProcedure("GetIncidentsPage", parameters);
+            var ds = dbResponse.Ds;
+
+            if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
+                return null;
+
+            dt = ds.Tables[1];
+            int total_incidents = int.Parse(ds.Tables[0].Rows[0][0].ToString());
+
+            var incidents = (from rw in dt.AsEnumerable()
+                             select new Incident()
+                             {
+                                 Id = rw["Id"].ToString(),
+                                 CreatedBy = rw["CreatedBy"].ToString(),
+                                 AssignedTo = rw["AssignedTo"].ToString(),
+                                 CreatedAT = DateTime.Parse(rw["CreatedAT"].ToString()),
+                                 Title = rw["Title"].ToString(),
+                                 Description = rw["Description"].ToString(),
+                                 AdditionalData = rw["AdditionalData"].ToString(),
+                                 Attachment1 = rw["Attachment1"].ToString(),
+                                 Attachment2 = rw["Attachment2"].ToString(),
+                                 Attachment3 = rw["Attachment3"].ToString(),
+                                 StartTime = DateTime.Parse(rw["StartTime"].ToString())
+                             }).ToList();
+
+            return new IncidentsWithPage 
+            { 
+                Total_Incidents = total_incidents,
+                Incidents = incidents
+            };
+        }
+
     }// end class
+
+    public class IncidentsWithPage
+    {
+        public int Total_Incidents { get; set; }
+        public List<Incident> Incidents { get; set; }
+    }
 }// end namespace

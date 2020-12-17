@@ -105,9 +105,16 @@ namespace IM.ApiControllers
         }
 
         // GET api/<controller>/5
-        public string Get(int id)
+        [HttpGet]
+        public List<Incident> GetAllIncidents()
         {
-            return "value";
+            return IncidentsMethods.GetAllIncidents();
+        }
+
+        [HttpGet]
+        public IncidentsWithPage GetIncidentsWithPage(int PageSize, int PageNumber, string SortBy, string SortDirection)
+        {
+            return IncidentsMethods.GetIncidentsPage(PageSize, PageNumber, SortBy, SortDirection);
         }
 
         // POST api/<controller>
