@@ -111,6 +111,7 @@ namespace IM.ApiControllers
             return IncidentsMethods.GetAllIncidents();
         }
 
+        [Authorize]
         [HttpGet]
         public IncidentsWithPage GetIncidentsWithPage(int PageSize, int PageNumber, string SortBy, string SortDirection)
         {
