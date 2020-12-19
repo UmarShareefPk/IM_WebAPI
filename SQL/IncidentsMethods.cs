@@ -23,6 +23,8 @@ namespace IM.SQL
                   { "Attachment2" , incident.Attachment2 },
                   { "Attachment3" , incident.Attachment3 },
                   { "StartTime" , incident.StartTime },
+                  { "DueDate" , incident.DueDate },
+                  { "Status" , incident.Status.ToUpper() },
 
             };
             return DataAccessMethods.ExecuteProcedure("AddNewIncident", parameters);
@@ -58,6 +60,8 @@ namespace IM.SQL
                              Attachment2 = rw["Attachment2"].ToString(),
                              Attachment3 = rw["Attachment3"].ToString(),
                              StartTime = DateTime.Parse(rw["StartTime"].ToString()),
+                             DueDate = DateTime.Parse(rw["DueDate"].ToString()),
+                             Status = rw["Status"].ToString()
 
                          }).ToList();
 
@@ -93,6 +97,9 @@ namespace IM.SQL
                                  Attachment2 = rw["Attachment2"].ToString(),
                                  Attachment3 = rw["Attachment3"].ToString(),
                                  StartTime = DateTime.Parse(rw["StartTime"].ToString()),
+                                 DueDate = DateTime.Parse(rw["DueDate"].ToString()),
+                                 Status = rw["Status"].ToString()
+
 
                              }).ToList();
 
@@ -133,7 +140,9 @@ namespace IM.SQL
                                  Attachment1 = rw["Attachment1"].ToString(),
                                  Attachment2 = rw["Attachment2"].ToString(),
                                  Attachment3 = rw["Attachment3"].ToString(),
-                                 StartTime = DateTime.Parse(rw["StartTime"].ToString())
+                                 StartTime = DateTime.Parse(rw["StartTime"].ToString()),
+                                 DueDate = DateTime.Parse(rw["DueDate"].ToString()),
+                                 Status = rw["Status"].ToString()
                              }).ToList();
 
             return new IncidentsWithPage 

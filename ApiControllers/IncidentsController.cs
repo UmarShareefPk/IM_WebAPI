@@ -14,18 +14,31 @@ namespace IM.ApiControllers
 {
     public class IncidentsController : ApiController
     {
-       [HttpPost]
-       public IHttpActionResult AddIncident([FromBody] Incident incident)
+        [HttpPost]
+        public IHttpActionResult AddIncident([FromBody] Incident incident)
         {
             DateTime dt = new DateTime();
-            if (incident == null || string.IsNullOrWhiteSpace(incident.CreatedBy) || !DateTime.TryParse(incident.CreatedAT.ToString(), out dt) 
-                 || string.IsNullOrWhiteSpace(incident.AssignedTo)
-                 || string.IsNullOrWhiteSpace(incident.Title) || string.IsNullOrWhiteSpace(incident.Description) || string.IsNullOrWhiteSpace(incident.AdditionalData)
-                 || !DateTime.TryParse(incident.StartTime.ToString(), out dt)
+            if (incident == null || string.IsNullOrWhiteSpace(incident.CreatedBy) || !DateTime.TryParse(incident.CreatedAT.ToString(), out dt)
+                 || string.IsNullOrWhiteSpace(incident.AssignedTo) || string.IsNullOrWhiteSpace(incident.Title) 
+                 || string.IsNullOrWhiteSpace(incident.Description) || string.IsNullOrWhiteSpace(incident.AdditionalData)
+                 || !DateTime.TryParse(incident.StartTime.ToString(), out dt) || !DateTime.TryParse(incident.DueDate.ToString(), out dt)
+                 || string.IsNullOrWhiteSpace(incident.Status)
                 )
             {
                 return ResponseMessage(Request.CreateResponse(HttpStatusCode.BadRequest, "Please enter all required fields and make sure datetime fields are in correct format."));
             }
+
+            string[] statusValidValues = 
+                                    { 
+                                            "N", // New 
+                                            "O", // Open
+                                            "I", // In Progress
+                                            "C", // Closed
+                                            "A"  // Approved
+                                    };
+
+            if (!statusValidValues.Contains(incident.Status.ToUpper()))
+                return ResponseMessage(Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid Status Value. Valid values are N,O,I,C,A"));
 
             var dbResponse = IncidentsMethods.AddIncident(incident);
             

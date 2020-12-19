@@ -18,6 +18,8 @@ namespace IM.Models
         public string Attachment2 { get; set; }
         public string Attachment3 { get; set; }
         public DateTime StartTime { get; set; }
+        public DateTime DueDate { get; set; }
+        public string Status { get; set; }
 
     }
 }
