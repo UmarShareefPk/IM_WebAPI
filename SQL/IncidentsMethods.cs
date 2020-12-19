@@ -99,7 +99,7 @@ namespace IM.SQL
             return incidents;
         }
 
-        public static IncidentsWithPage GetIncidentsPage(int pageSize , int pageNumber, string sortBy, string sortDirection)
+        public static IncidentsWithPage GetIncidentsPage(int pageSize , int pageNumber, string sortBy, string sortDirection, string Serach)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
@@ -108,6 +108,7 @@ namespace IM.SQL
                  { "PageNumber" , pageNumber},
                  { "SortBy" , sortBy},
                  { "SortDirection" , sortDirection},
+                 { "SearchText" , Serach},
             };
 
             var dbResponse = DataAccessMethods.ExecuteProcedure("GetIncidentsPage", parameters);

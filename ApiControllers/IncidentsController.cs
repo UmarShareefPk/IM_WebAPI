@@ -113,9 +113,9 @@ namespace IM.ApiControllers
 
         [Authorize]
         [HttpGet]
-        public IncidentsWithPage GetIncidentsWithPage(int PageSize, int PageNumber, string SortBy, string SortDirection)
+        public IncidentsWithPage GetIncidentsWithPage(int PageSize, int PageNumber, string SortBy, string SortDirection, string Search)
         {
-            return IncidentsMethods.GetIncidentsPage(PageSize, PageNumber, SortBy, SortDirection);
+            return IncidentsMethods.GetIncidentsPage(PageSize, PageNumber, SortBy, SortDirection , Search);
         }
 
         // POST api/<controller>
