@@ -21,28 +21,24 @@ namespace IM.Provider
                 var password = context.Password;
 
                 UserLogin user = UsersMethods.Login(username, password);
+               
                 if (user != null)
                 {
                     var claims = new List<Claim>();
 
                     claims.Add(new Claim(ClaimTypes.Name, "User"));
-                    claims.Add(new Claim("Id", user.user.Id));
+                    claims.Add(new Claim("Id", user.user.Id));               
 
 
-
-                    // var props = new AuthenticationProperties(new Dictionary<string, string>
-                    // {
-                    //     {
-                    //         "client_id", (context.ClientId == null) ? string.Empty : context.ClientId
-                    //     },
-                    //     {
-                    //         "Name", user.Name
-                    //     }
-                    // });
-
+                    var props = new AuthenticationProperties(new Dictionary<string, string>
+                     {
+                         {"User_Id", user.user.Id},
+                         {"Name", user.user.FirstName + " " + user.user.LastName}
+                         
+                     });
 
                     ClaimsIdentity oAutIdentity = new ClaimsIdentity(claims, IM.App_Start.Startup.OAuthOptions.AuthenticationType);
-                    context.Validated(new AuthenticationTicket(oAutIdentity, new AuthenticationProperties() { }));
+                    context.Validated(new AuthenticationTicket(oAutIdentity, props));
                 }
                 else
                 {

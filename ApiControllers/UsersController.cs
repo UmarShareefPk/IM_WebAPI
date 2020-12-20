@@ -18,7 +18,6 @@ namespace IM.ApiControllers
         [HttpGet]
         public User UserDetail()
         {
-
             var claims = Request.GetOwinContext().Authentication.User.Claims;
             string userId = "";
             foreach (var claim in claims)
@@ -33,6 +32,12 @@ namespace IM.ApiControllers
                 }
             }
             return UsersMethods.GetUserById(userId);
+        }
+
+        [HttpGet]
+        public IHttpActionResult AllUsers()
+        {
+            return ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, UsersMethods.GetAllUsers()));
         }
 
         [HttpPost]

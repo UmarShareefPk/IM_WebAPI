@@ -87,6 +87,31 @@ namespace IM.SQL
             return Users.First();
         }
 
+        public static List<User> GetAllUsers()
+        {
+            var dt = new DataTable();
+            var parameters = new SortedList<string, object>()
+            {   };
+
+            var dbResponse = DataAccessMethods.ExecuteProcedure("GetAllUsers", parameters);
+
+            dt = dbResponse.Ds.Tables[0];
+
+            var Users = (from rw in dt.AsEnumerable()
+                         select new User()
+                         {
+                             Id = rw["Id"].ToString(),
+                             CreateDate = DateTime.Parse(rw["CreateDate"].ToString()),
+                             FirstName = rw["FirstName"].ToString(),
+                             LastName = rw["LastName"].ToString(),
+                             ProfilePic = rw["ProfilePic"].ToString(),
+                             Email = rw["Email"].ToString(),
+                             Phone = rw["Phone"].ToString(),
+                         }).ToList();
+
+            return Users;
+        }
+
         public static DbResponse AddUser(User user)
         {
             var parameters = new SortedList<string, object>()
