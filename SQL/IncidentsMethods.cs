@@ -18,16 +18,50 @@ namespace IM.SQL
                   { "AssignedTo" , incident.AssignedTo },
                   { "Title" , incident.Title },
                   { "Description" , incident.Description },
-                  { "AdditionalData" , incident.AdditionalData },
-                  { "Attachment1" , incident.Attachment1 },
-                  { "Attachment2" , incident.Attachment2 },
-                  { "Attachment3" , incident.Attachment3 },
+                  { "AdditionalData" , incident.AdditionalData },                 
                   { "StartTime" , incident.StartTime },
                   { "DueDate" , incident.DueDate },
                   { "Status" , incident.Status.ToUpper() },
 
             };
             return DataAccessMethods.ExecuteProcedure("AddNewIncident", parameters);
+        }
+
+        public static DbResponse AddIncidentAttachments(IncidentAttachments incidentAttachments)
+        {
+            var parameters = new SortedList<string, object>()
+            {
+                  { "FileName" , incidentAttachments.FileName },
+                  { "ContentType" , incidentAttachments.ContentType },
+                  { "IncidentId" , incidentAttachments.IncidentId }
+                  
+
+            };
+            return DataAccessMethods.ExecuteProcedure("AddIncidentAttachment", parameters);
+        }
+
+        public static List<IncidentAttachments> GetIncidentAttachment(string incidentId)
+        {
+            var parameters = new SortedList<string, object>()
+            {
+                  { "IncidentId" , incidentId }  
+            };
+            var dbResponse =  DataAccessMethods.ExecuteProcedure("GetAttachmentByIncidentId", parameters);
+
+
+            var dt = dbResponse.Ds.Tables[0];
+
+            var attachments = (from rw in dt.AsEnumerable()
+                             select new IncidentAttachments()
+                             {
+                                 Id = rw["Id"].ToString(),   
+                                 FileName = rw["FileName"].ToString(),
+                                 ContentType = rw["ContentType"].ToString(),
+                                 IncidentId = rw["IncidentId"].ToString(),
+                                 DateAdded = DateTime.Parse(rw["DateAdded"].ToString())  
+                             }).ToList();
+
+            return attachments;
         }
 
         public static Incident GetIncidentrById(string incidentId)
@@ -55,10 +89,7 @@ namespace IM.SQL
                              CreatedAT = DateTime.Parse(rw["CreatedAT"].ToString()),
                              Title = rw["Title"].ToString(),
                              Description = rw["Description"].ToString(),
-                             AdditionalData = rw["AdditionalData"].ToString(),
-                             Attachment1 = rw["Attachment1"].ToString(),
-                             Attachment2 = rw["Attachment2"].ToString(),
-                             Attachment3 = rw["Attachment3"].ToString(),
+                             AdditionalData = rw["AdditionalData"].ToString(),                             
                              StartTime = DateTime.Parse(rw["StartTime"].ToString()),
                              DueDate = DateTime.Parse(rw["DueDate"].ToString()),
                              Status = rw["Status"].ToString()
@@ -92,10 +123,7 @@ namespace IM.SQL
                                  CreatedAT = DateTime.Parse(rw["CreatedAT"].ToString()),
                                  Title = rw["Title"].ToString(),
                                  Description = rw["Description"].ToString(),
-                                 AdditionalData = rw["AdditionalData"].ToString(),
-                                 Attachment1 = rw["Attachment1"].ToString(),
-                                 Attachment2 = rw["Attachment2"].ToString(),
-                                 Attachment3 = rw["Attachment3"].ToString(),
+                                 AdditionalData = rw["AdditionalData"].ToString(),                                 
                                  StartTime = DateTime.Parse(rw["StartTime"].ToString()),
                                  DueDate = DateTime.Parse(rw["DueDate"].ToString()),
                                  Status = rw["Status"].ToString()
@@ -136,10 +164,7 @@ namespace IM.SQL
                                  CreatedAT = DateTime.Parse(rw["CreatedAT"].ToString()),
                                  Title = rw["Title"].ToString(),
                                  Description = rw["Description"].ToString(),
-                                 AdditionalData = rw["AdditionalData"].ToString(),
-                                 Attachment1 = rw["Attachment1"].ToString(),
-                                 Attachment2 = rw["Attachment2"].ToString(),
-                                 Attachment3 = rw["Attachment3"].ToString(),
+                                 AdditionalData = rw["AdditionalData"].ToString(),                                
                                  StartTime = DateTime.Parse(rw["StartTime"].ToString()),
                                  DueDate = DateTime.Parse(rw["DueDate"].ToString()),
                                  Status = rw["Status"].ToString()

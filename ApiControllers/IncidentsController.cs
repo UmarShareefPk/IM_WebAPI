@@ -15,8 +15,24 @@ namespace IM.ApiControllers
     public class IncidentsController : ApiController
     {
         [HttpPost]
-        public IHttpActionResult AddIncident([FromBody] Incident incident)
+        public IHttpActionResult AddIncident()
         {
+            if (HttpContext.Current.Request.Files.Count > 0)
+            {
+            }
+            var inci = HttpContext.Current.Request["StartTime"];
+            Incident incident = new Incident();
+            incident.Title = HttpContext.Current.Request["Title"];
+            incident.Description = HttpContext.Current.Request["Description"];
+            incident.AdditionalData = HttpContext.Current.Request["AdditionalDeta"];
+            incident.AssignedTo = HttpContext.Current.Request["AssignedTo"];
+            incident.CreatedBy = HttpContext.Current.Request["CreatedBy"];
+            incident.DueDate = DateTime.Parse(HttpContext.Current.Request["DueDate"]);
+            incident.StartTime = DateTime.Parse(HttpContext.Current.Request["StartTime"]);
+            incident.Status = HttpContext.Current.Request["Status"];
+
+            return null;
+
             DateTime dt = new DateTime();
             if (incident == null || string.IsNullOrWhiteSpace(incident.CreatedBy) || !DateTime.TryParse(incident.CreatedAT.ToString(), out dt)
                  || string.IsNullOrWhiteSpace(incident.AssignedTo) || string.IsNullOrWhiteSpace(incident.Title) 

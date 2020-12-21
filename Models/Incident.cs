@@ -14,9 +14,7 @@ namespace IM.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public string AdditionalData { get; set; }
-        public string Attachment1 { get; set; }
-        public string Attachment2 { get; set; }
-        public string Attachment3 { get; set; }
+        public IncidentAttachments Attachments { get; set; }        
         public DateTime StartTime { get; set; }
         public DateTime DueDate { get; set; }
         public string Status { get; set; }
