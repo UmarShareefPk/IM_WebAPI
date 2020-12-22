@@ -31,12 +31,12 @@ namespace IM.ApiControllers
             incident.StartTime = DateTime.Parse(HttpContext.Current.Request["StartTime"]);
             incident.Status = HttpContext.Current.Request["Status"];
 
-            return null;
+           // return null;
 
             DateTime dt = new DateTime();
             if (incident == null || string.IsNullOrWhiteSpace(incident.CreatedBy) || !DateTime.TryParse(incident.CreatedAT.ToString(), out dt)
                  || string.IsNullOrWhiteSpace(incident.AssignedTo) || string.IsNullOrWhiteSpace(incident.Title) 
-                 || string.IsNullOrWhiteSpace(incident.Description) || string.IsNullOrWhiteSpace(incident.AdditionalData)
+                 || string.IsNullOrWhiteSpace(incident.Description) 
                  || !DateTime.TryParse(incident.StartTime.ToString(), out dt) || !DateTime.TryParse(incident.DueDate.ToString(), out dt)
                  || string.IsNullOrWhiteSpace(incident.Status)
                 )
@@ -70,6 +70,33 @@ namespace IM.ApiControllers
                 else
                     return ResponseMessage(Request.CreateResponse(HttpStatusCode.InternalServerError, "Internal Error. " + dbResponse.ErrorMsg));
             }
+
+            string incident_Id = dbResponse.Ds.Tables[0].Rows[0][0].ToString();
+
+            if (HttpContext.Current.Request.Files.Count > 0)
+            {
+                    foreach (var fileName in HttpContext.Current.Request.Files.AllKeys)
+                    {
+                        HttpPostedFile file = HttpContext.Current.Request.Files[fileName];
+                        if (file != null)
+                        {
+                            var attachment = new IncidentAttachments();
+                            attachment.FileName = file.FileName;
+                            attachment.ContentType = file.ContentType;
+                            attachment.IncidentId = incident_Id;
+                           
+                            //var FileUniqueName = Guid.NewGuid().ToString();
+                            System.IO.Directory.CreateDirectory(HttpContext.Current.Server.MapPath("~/Attachments/Incidents/") + incident_Id);
+                            var rootPath = HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + incident_Id);
+                            var fileSavePath = System.IO.Path.Combine(rootPath, file.FileName);
+                            file.SaveAs(fileSavePath);
+                            
+                          IncidentsMethods.AddIncidentAttachments(attachment); 
+                        }
+                    }//end of foreach
+              
+            }//end of if count > 0
+
             return ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, "New incident has been added."));
         }
 
