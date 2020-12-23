@@ -126,5 +126,51 @@ namespace IM.SQL
             return DataAccessMethods.ExecuteProcedure("AddNewUser", parameters);
         }
 
+        public static UsersWithPage GetUsersPage(int pageSize, int pageNumber, string sortBy, string sortDirection, string Serach)
+        {
+            var dt = new DataTable();
+            var parameters = new SortedList<string, object>()
+            {
+                 { "PageSize" , pageSize},
+                 { "PageNumber" , pageNumber},
+                 { "SortBy" , sortBy},
+                 { "SortDirection" , sortDirection},
+                 { "SearchText" , Serach},
+            };
+
+            var dbResponse = DataAccessMethods.ExecuteProcedure("GetUsersPage", parameters);
+            var ds = dbResponse.Ds;
+
+            if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
+                return null;
+
+            dt = ds.Tables[1];
+            int total_users = int.Parse(ds.Tables[0].Rows[0][0].ToString());
+
+            var users = (from rw in dt.AsEnumerable()
+                             select new User()
+                             {
+                                 Id = rw["Id"].ToString(),
+                                 CreateDate = DateTime.Parse(rw["CreateDate"].ToString()),
+                                 FirstName = rw["FirstName"].ToString(),
+                                 LastName = rw["LastName"].ToString(),
+                                 ProfilePic = rw["ProfilePic"].ToString(),
+                                 Email = rw["Email"].ToString(),
+                                 Phone = rw["Phone"].ToString(),
+                             }).ToList();
+
+            return new UsersWithPage
+            {
+                Total_Users = total_users,
+                Users = users
+            };
+        }
     } // end of class
+
+    public class UsersWithPage
+    {
+        public int Total_Users { get; set; }
+        public List<User> Users { get; set; }
+    }
+
 } //end of namespace

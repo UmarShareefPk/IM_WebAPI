@@ -16,11 +16,7 @@ namespace IM.ApiControllers
     {
         [HttpPost]
         public IHttpActionResult AddIncident()
-        {
-            if (HttpContext.Current.Request.Files.Count > 0)
-            {
-            }
-            var inci = HttpContext.Current.Request["StartTime"];
+        {            
             Incident incident = new Incident();
             incident.Title = HttpContext.Current.Request["Title"];
             incident.Description = HttpContext.Current.Request["Description"];
@@ -167,7 +163,7 @@ namespace IM.ApiControllers
             return IncidentsMethods.GetAllIncidents();
         }
 
-        [Authorize]
+       // [Authorize]
         [HttpGet]
         public IncidentsWithPage GetIncidentsWithPage(int PageSize, int PageNumber, string SortBy, string SortDirection, string Search)
         {
