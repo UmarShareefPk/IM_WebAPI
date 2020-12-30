@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Web;
 using System.Web.Http;
 
@@ -167,6 +168,7 @@ namespace IM.ApiControllers
         [HttpGet]
         public IncidentsWithPage GetIncidentsWithPage(int PageSize, int PageNumber, string SortBy, string SortDirection, string Search)
         {
+           // Thread.Sleep(7000);
             return IncidentsMethods.GetIncidentsPage(PageSize, PageNumber, SortBy, SortDirection , Search);
         }
 

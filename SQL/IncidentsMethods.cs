@@ -27,6 +27,19 @@ namespace IM.SQL
             return DataAccessMethods.ExecuteProcedure("AddNewIncident", parameters);
         }
 
+        public static DbResponse AddComment(Comment comment)
+        {
+            var parameters = new SortedList<string, object>()
+            {
+                  { "IncidentId" , comment.IncidentId },
+                  { "UserId" , comment.UserId },
+                  { "Comment" , comment.CommentText },
+                 
+
+            };
+            return DataAccessMethods.ExecuteProcedure("AddComment", parameters);
+        }
+
         public static DbResponse AddIncidentAttachments(IncidentAttachments incidentAttachments)
         {
             var parameters = new SortedList<string, object>()
