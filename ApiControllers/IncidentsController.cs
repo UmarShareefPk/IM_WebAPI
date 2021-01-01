@@ -1,4 +1,5 @@
-﻿using IM.Models;
+﻿using IM.Common;
+using IM.Models;
 using IM.SQL;
 using System;
 using System.Collections.Generic;
@@ -100,6 +101,7 @@ namespace IM.ApiControllers
         [HttpGet]
         public Incident IncidentById(string Id)
         {
+            Thread.Sleep(500);
             return IncidentsMethods.GetIncidentrById(Id);
         }
 
@@ -164,7 +166,13 @@ namespace IM.ApiControllers
             return IncidentsMethods.GetAllIncidents();
         }
 
-       // [Authorize]
+        [HttpPost]
+        public void UpdateIncident([FromBody] IncidentUpdate IU)
+        {
+            IncidentsMethods.UpdateIncident(IU.IncidentId, IU.Parameter, IU.Value, IU.UserId);
+        }
+
+        // [Authorize]
         [HttpGet]
         public IncidentsWithPage GetIncidentsWithPage(int PageSize, int PageNumber, string SortBy, string SortDirection, string Search)
         {

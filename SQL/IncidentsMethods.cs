@@ -79,6 +79,7 @@ namespace IM.SQL
 
         public static Incident GetIncidentrById(string incidentId)
         {
+           
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
             {
@@ -188,6 +189,20 @@ namespace IM.SQL
                 Total_Incidents = total_incidents,
                 Incidents = incidents
             };
+        }
+
+        public static DbResponse UpdateIncident(string incidentId , string parameter , string value , string userId)
+        {
+            var dt = new DataTable();
+            var parameters = new SortedList<string, object>()
+            {
+                 { "IncidentId" , incidentId},
+                 { "Parameter" , parameter},
+                 { "Value" , value},
+                 { "UserId" , userId},             
+            };
+
+            return DataAccessMethods.ExecuteProcedure("UpdateIncident", parameters);
         }
 
     }// end class
