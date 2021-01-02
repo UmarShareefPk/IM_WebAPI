@@ -33,7 +33,7 @@ namespace IM.SQL
             {
                   { "IncidentId" , comment.IncidentId },
                   { "UserId" , comment.UserId },
-                  { "Comment" , comment.CommentText },
+                  { "CommentText" , comment.CommentText },
                  
 
             };
@@ -47,10 +47,20 @@ namespace IM.SQL
                   { "FileName" , incidentAttachments.FileName },
                   { "ContentType" , incidentAttachments.ContentType },
                   { "IncidentId" , incidentAttachments.IncidentId }
-                  
-
             };
             return DataAccessMethods.ExecuteProcedure("AddIncidentAttachment", parameters);
+        }
+
+        public static DbResponse AddCommentAttachments(CommentAttachments commentAttachments)
+        {
+            var parameters = new SortedList<string, object>()
+            {
+                  { "FileName" , commentAttachments.FileName },
+                  { "ContentType" , commentAttachments.ContentType },
+                  { "CommentId" , commentAttachments.CommentId }
+            };
+            var rr =  DataAccessMethods.ExecuteProcedure("AddCommentAttachment", parameters);
+            return rr;
         }
 
         public static List<IncidentAttachments> GetIncidentAttachment(string incidentId)
@@ -79,8 +89,6 @@ namespace IM.SQL
 
         public static Incident GetIncidentrById(string incidentId)
         {
-           
-            var dt = new DataTable();
             var parameters = new SortedList<string, object>()
             {
                   { "Id" , incidentId},
@@ -92,9 +100,61 @@ namespace IM.SQL
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
                 return null;
 
-            dt = ds.Tables[0];
+            var incidentDt = new DataTable();
+            var attachmentsDt = new DataTable(); 
+            var commentsDt = new DataTable();
+            var commentsAttachmentDt = new DataTable();
+            var incidentLogsDt = new DataTable();
 
-            var incidents = (from rw in dt.AsEnumerable()
+            incidentDt = ds.Tables[0];
+            attachmentsDt = ds.Tables[1];
+            commentsDt = ds.Tables[2];
+            commentsAttachmentDt = ds.Tables[3];
+            incidentLogsDt = ds.Tables[4];
+
+            var attachments = (from rw in attachmentsDt.AsEnumerable()
+                               select new IncidentAttachments()
+                               {
+                                   Id = rw["Id"].ToString(),
+                                   DateAdded = DateTime.Parse(rw["DateAdded"].ToString()),
+                                   FileName = rw["FileName"].ToString(),
+                                   ContentType = rw["ContentType"].ToString(),
+                                   IncidentId = rw["IncidentId"].ToString()
+                               }).ToList();
+
+            var comments = (from rw in commentsDt.AsEnumerable()
+                               select new Comment()
+                               {
+                                   Id = rw["Id"].ToString(),
+                                   CommentText = rw["Comment"].ToString(),
+                                   CreateDate = DateTime.Parse(rw["CreateDate"].ToString()),
+                                   UserId = rw["UserId"].ToString(),
+                                   IncidentId = rw["IncidentId"].ToString(),
+                                   attachments = (from row in commentsAttachmentDt.AsEnumerable()
+                                                  where row["Id"].ToString() == rw["IncidentId"].ToString()
+                                                  select new CommentAttachments()
+                                                  {
+                                                      Id = row["Id"].ToString(),
+                                                      DateAdded = DateTime.Parse(rw["DateAdded"].ToString()),
+                                                      FileName = row["FileName"].ToString(),
+                                                      ContentType = row["ContentType"].ToString(),
+                                                      CommentId = row["CommentId"].ToString()
+                                                  }).ToList()
+                               }).ToList();
+
+            var logs = (from rw in incidentLogsDt.AsEnumerable()
+                               select new IncidentLogs()
+                               {
+                                   Id = rw["Id"].ToString(),
+                                   UpdateDate = DateTime.Parse(rw["UpdateDate"].ToString()),
+                                   Value = rw["Value"].ToString(),
+                                   OldValue = rw["OldValue"].ToString(),
+                                   UserId = rw["UserId"].ToString(),
+                                   IncidentId = rw["IncidentId"].ToString(),
+                                   Parameter = rw["Parameter"].ToString(),
+                               }).ToList();
+
+            var incidents = (from rw in incidentDt.AsEnumerable()
                          select new Incident()
                          {
                              Id = rw["Id"].ToString(),
@@ -106,8 +166,10 @@ namespace IM.SQL
                              AdditionalData = rw["AdditionalData"].ToString(),                             
                              StartTime = DateTime.Parse(rw["StartTime"].ToString()),
                              DueDate = DateTime.Parse(rw["DueDate"].ToString()),
-                             Status = rw["Status"].ToString()
-
+                             Status = rw["Status"].ToString(),
+                             Comments = comments,
+                             Attachments = attachments,
+                             Logs = logs
                          }).ToList();
 
             return incidents.First();

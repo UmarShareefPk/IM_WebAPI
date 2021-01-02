@@ -5,13 +5,14 @@ using System.Web;
 
 namespace IM.Models
 {
-    public class Comment
+    public class IncidentLogs
     {
         public string Id { get; set; }
         public string IncidentId { get; set; }
+        public string Parameter { get; set; }
+        public string Value { get; set; }
         public string UserId { get; set; }
-        public DateTime CreateDate { get; set; }
-        public string CommentText { get; set; }
-        public List<CommentAttachments> attachments { get; set; }
-    }
+        public string OldValue { get; set; }
+        public DateTime UpdateDate { get; set; }
+     }
 }

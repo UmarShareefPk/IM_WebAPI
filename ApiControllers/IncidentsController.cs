@@ -98,6 +98,51 @@ namespace IM.ApiControllers
             return ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, "New incident has been added."));
         }
 
+        [HttpPost]
+        public IHttpActionResult AddComment()
+        {
+            Comment comment = new Comment();
+            comment.CommentText = HttpContext.Current.Request["CommentText"];
+            comment.IncidentId = HttpContext.Current.Request["IncidentId"];
+            comment.UserId = HttpContext.Current.Request["UserId"];
+
+            DateTime dt = new DateTime();
+            if (comment == null || string.IsNullOrWhiteSpace(comment.CommentText) || string.IsNullOrWhiteSpace(comment.IncidentId)
+                )
+            {
+                return ResponseMessage(Request.CreateResponse(HttpStatusCode.BadRequest, "Please enter all required fields."));
+            }
+            var dbResponse = IncidentsMethods.AddComment(comment);
+
+            string comment_Id = dbResponse.Ds.Tables[0].Rows[0][0].ToString();
+
+            if (HttpContext.Current.Request.Files.Count > 0)
+            {
+                foreach (var fileName in HttpContext.Current.Request.Files.AllKeys)
+                {
+                    HttpPostedFile file = HttpContext.Current.Request.Files[fileName];
+                    if (file != null)
+                    {
+                        var attachment = new CommentAttachments();
+                        attachment.FileName = file.FileName;
+                        attachment.ContentType = file.ContentType;
+                        attachment.CommentId = comment_Id;
+
+                        //var FileUniqueName = Guid.NewGuid().ToString();
+                        System.IO.Directory.CreateDirectory(HttpContext.Current.Server.MapPath("~/Attachments/Incidents/") + comment.IncidentId + "/Comments/" + comment_Id );
+                        var rootPath = HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + comment.IncidentId + "/Comments/" + comment_Id);
+                        var fileSavePath = System.IO.Path.Combine(rootPath, file.FileName);
+                        file.SaveAs(fileSavePath);
+
+                        IncidentsMethods.AddCommentAttachments(attachment);
+                    }
+                }//end of foreach
+
+            }//end of if count > 0
+
+            return ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, "New Comment has been added."));
+        }
+
         [HttpGet]
         public Incident IncidentById(string Id)
         {

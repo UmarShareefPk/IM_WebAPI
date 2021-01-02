@@ -209,7 +209,9 @@
     </Compile>
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\Incident.cs" />
+    <Compile Include="Models\CommentAttachments.cs" />
     <Compile Include="Models\IncidentAttachments.cs" />
+    <Compile Include="Models\IncidentLogs.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\UserLogin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
