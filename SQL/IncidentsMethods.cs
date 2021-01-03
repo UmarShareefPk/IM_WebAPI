@@ -131,11 +131,11 @@ namespace IM.SQL
                                    UserId = rw["UserId"].ToString(),
                                    IncidentId = rw["IncidentId"].ToString(),
                                    attachments = (from row in commentsAttachmentDt.AsEnumerable()
-                                                  where row["Id"].ToString() == rw["IncidentId"].ToString()
+                                                  where row["CommentId"].ToString() == rw["Id"].ToString()
                                                   select new CommentAttachments()
                                                   {
                                                       Id = row["Id"].ToString(),
-                                                      DateAdded = DateTime.Parse(rw["DateAdded"].ToString()),
+                                                      DateAdded = DateTime.Parse(row["DateAdded"].ToString()),
                                                       FileName = row["FileName"].ToString(),
                                                       ContentType = row["ContentType"].ToString(),
                                                       CommentId = row["CommentId"].ToString()

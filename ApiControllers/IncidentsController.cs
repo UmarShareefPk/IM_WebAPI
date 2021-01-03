@@ -182,25 +182,34 @@ namespace IM.ApiControllers
 
 
         [HttpGet]
-        public Object DownloadFile(string uniqueName)
+        public Object DownloadFile(string type, string commentId, string incidentId , string filename, string contentType)
         {
-            string ContentType = "image/png";
+            string ContentType = contentType;
             //Physical Path of Root Folder
-            var rootPath = System.Web.HttpContext.Current.Server.MapPath("~/Attachments");        
+            var rootPath = "";
+            if(type.ToLower() == "comment")
+            {
+                rootPath = System.Web.HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + incidentId + "/Comments/" + commentId);
+            }
+            else
+            {
+                rootPath = System.Web.HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + incidentId);
+            }
+                   
             
-                HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
-                var fileFullPath = System.IO.Path.Combine(rootPath, uniqueName + ".png");
+            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+            var fileFullPath = System.IO.Path.Combine(rootPath, filename );
 
-                byte[] file = System.IO.File.ReadAllBytes(fileFullPath);
-                System.IO.MemoryStream ms = new System.IO.MemoryStream(file);
+            byte[] file = System.IO.File.ReadAllBytes(fileFullPath);
+            System.IO.MemoryStream ms = new System.IO.MemoryStream(file);
 
-                response.Content = new ByteArrayContent(file);
-                response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
-                //String mimeType = MimeType.GetMimeType(file); //You may do your hard coding here based on file extension
+            response.Content = new ByteArrayContent(file);
+            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
+            //String mimeType = MimeType.GetMimeType(file); //You may do your hard coding here based on file extension
 
-                response.Content.Headers.ContentType = new MediaTypeHeaderValue(ContentType);// obj.DocumentName.Substring(obj.DocumentName.LastIndexOf(".") + 1, 3);
-                response.Content.Headers.ContentDisposition.FileName = uniqueName + ".png";
-                return response;         
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue(ContentType);// obj.DocumentName.Substring(obj.DocumentName.LastIndexOf(".") + 1, 3);
+            response.Content.Headers.ContentDisposition.FileName = filename;
+            return response;         
 
         }
 
@@ -212,7 +221,7 @@ namespace IM.ApiControllers
         }
 
         [HttpPost]
-        public void UpdateIncident([FromBody] IncidentUpdate IU)
+        public void UpdateIncident([FromBody] IncidentUpdate IU) //IU = IncidentUpdate, 
         {
             IncidentsMethods.UpdateIncident(IU.IncidentId, IU.Parameter, IU.Value, IU.UserId);
         }
