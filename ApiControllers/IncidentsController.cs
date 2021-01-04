@@ -209,8 +209,35 @@ namespace IM.ApiControllers
 
             response.Content.Headers.ContentType = new MediaTypeHeaderValue(ContentType);// obj.DocumentName.Substring(obj.DocumentName.LastIndexOf(".") + 1, 3);
             response.Content.Headers.ContentDisposition.FileName = filename;
-            return response;         
+            return response;   
+        }
 
+        [HttpGet]
+        public string DeleteFile(string type,  string commentId, string incidentId, string userId, string fileId, string filename, string contentType)
+        {
+            string ContentType = contentType;
+            //Physical Path of Root Folder
+            var rootPath = "";
+            if (type.ToLower() == "comment")
+            {
+                IncidentsMethods.DeleteFile("comment", fileId, userId);
+                rootPath = System.Web.HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + incidentId + "/Comments/" + commentId);
+            }
+            else
+            {
+                IncidentsMethods.DeleteFile("incident", fileId, userId);
+                rootPath = System.Web.HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + incidentId);
+            }
+
+
+            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+            var fileFullPath = System.IO.Path.Combine(rootPath, filename);
+
+            if (File.Exists(@fileFullPath))
+            {
+                File.Delete(@fileFullPath);
+            }
+            return "Fiile Delete";
         }
 
         // GET api/<controller>/5

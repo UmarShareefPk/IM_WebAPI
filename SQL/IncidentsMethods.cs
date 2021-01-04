@@ -87,7 +87,33 @@ namespace IM.SQL
             return attachments;
         }
 
-        public static Incident GetIncidentrById(string incidentId)
+        public static string DeleteFile(string type, string filetId, string userId)
+        {
+            var parameters = new SortedList<string, object>()
+            {
+                  { "Id" , filetId},
+                  { "UserId" , userId},
+            };
+
+            var dbResponse = new DbResponse();
+            if (type.ToLower() == "comment")
+            {
+                dbResponse =  DataAccessMethods.ExecuteProcedure("DeleteCommentAttachment", parameters);
+            }
+            else
+            {
+                dbResponse = DataAccessMethods.ExecuteProcedure("DeleteIncidentAttachment", parameters);
+            }
+            var ds = dbResponse.Ds;
+
+            if (dbResponse.Error)
+                return dbResponse.ErrorMsg;
+            else
+                return "Success";
+
+        }
+
+            public static Incident GetIncidentrById(string incidentId)
         {
             var parameters = new SortedList<string, object>()
             {
