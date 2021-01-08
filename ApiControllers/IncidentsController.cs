@@ -140,13 +140,14 @@ namespace IM.ApiControllers
 
             }//end of if count > 0
 
-            return ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, "New Comment has been added."));
+            var newComment = IncidentsMethods.GetCommentById(comment_Id);
+            return ResponseMessage(Request.CreateResponse(HttpStatusCode.OK, newComment));
         }
 
         [HttpGet]
         public Incident IncidentById(string Id)
         {
-            Thread.Sleep(500);
+            //Thread.Sleep(500);
             return IncidentsMethods.GetIncidentrById(Id);
         }
 
@@ -229,7 +230,6 @@ namespace IM.ApiControllers
                 rootPath = System.Web.HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + incidentId);
             }
 
-
             HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
             var fileFullPath = System.IO.Path.Combine(rootPath, filename);
 
@@ -239,6 +239,22 @@ namespace IM.ApiControllers
             }
             return "Fiile Delete";
         }
+
+
+        [HttpGet]
+        public string DeleteComment(string commentId , string incidentId , string userId)
+        {
+
+            IncidentsMethods.DeleteComment(commentId, userId);
+            string path = System.Web.HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + incidentId + "/Comments/" + commentId);            
+      
+            if (Directory.Exists(@path))
+            {
+                Helper.DeleteDirectory(@path);
+            }
+            return "Comment Delete";
+        }
+
 
         // GET api/<controller>/5
         [HttpGet]
@@ -251,6 +267,12 @@ namespace IM.ApiControllers
         public void UpdateIncident([FromBody] IncidentUpdate IU) //IU = IncidentUpdate, 
         {
             IncidentsMethods.UpdateIncident(IU.IncidentId, IU.Parameter, IU.Value, IU.UserId);
+        }
+
+        [HttpPost]
+        public void UpdateComment([FromBody] Comment C) 
+        {
+            IncidentsMethods.UpdateComment(C.Id, C.CommentText, C.UserId);
         }
 
         // [Authorize]

@@ -201,8 +201,62 @@ namespace IM.SQL
             return incidents.First();
         }
 
-        public static List<Incident> GetAllIncidents()
+        public static Comment GetCommentById(string commentId)
         {
+            var parameters = new SortedList<string, object>()
+            {
+                  { "CommentId" , commentId},
+            };
+
+            var dbResponse = DataAccessMethods.ExecuteProcedure("GetCommentById", parameters);
+            var ds = dbResponse.Ds;
+
+            if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
+                return null;
+
+            var commentsDt = ds.Tables[0];
+            var commentsAttachmentDt = ds.Tables[1];
+
+            var comment = (from rw in commentsDt.AsEnumerable()
+                            select new Comment()
+                            {
+                                Id = rw["Id"].ToString(),
+                                CommentText = rw["Comment"].ToString(),
+                                CreateDate = DateTime.Parse(rw["CreateDate"].ToString()),
+                                UserId = rw["UserId"].ToString(),
+                                IncidentId = rw["IncidentId"].ToString(),
+                                attachments = (from row in commentsAttachmentDt.AsEnumerable()
+                                               where row["CommentId"].ToString() == rw["Id"].ToString()
+                                               select new CommentAttachments()
+                                               {
+                                                   Id = row["Id"].ToString(),
+                                                   DateAdded = DateTime.Parse(row["DateAdded"].ToString()),
+                                                   FileName = row["FileName"].ToString(),
+                                                   ContentType = row["ContentType"].ToString(),
+                                                   CommentId = row["CommentId"].ToString()
+                                               }).ToList()
+                            }).ToList().First();
+
+            return comment;
+        }
+
+        public static void DeleteComment(string commentId , string userId)
+        {
+            var parameters = new SortedList<string, object>()
+            {
+                  { "CommentId" , commentId},
+                  { "UserId" , userId}
+            };
+
+            var dbResponse = DataAccessMethods.ExecuteProcedure("DeleteComment", parameters);
+            var ds = dbResponse.Ds;
+
+            if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
+                return;
+        }
+
+            public static List<Incident> GetAllIncidents()
+             {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
             {                 
@@ -291,6 +345,19 @@ namespace IM.SQL
             };
 
             return DataAccessMethods.ExecuteProcedure("UpdateIncident", parameters);
+        }
+
+        public static DbResponse UpdateComment(string commentId, string commentText, string userId)
+        {
+            var dt = new DataTable();
+            var parameters = new SortedList<string, object>()
+            {
+                 { "CommentText" , commentText},
+                 { "CommentId" , commentId},
+                 { "UserId" , userId}
+            };
+
+            return DataAccessMethods.ExecuteProcedure("UpdateComment", parameters);
         }
 
     }// end class
